@@ -5,3 +5,4 @@ class ErrorCode:
     NOMBRE_DUPLICADO = "El nombre ya existe."
     PERSONA_TIENE_MASCOTAS = "La persona tiene mascotas a cargo. No puede ser eliminada."
     TIPO_MASCOTA_INVALIDO = "El tipo de mascota indicado es inválido. El valor indicado debiera ser una de las opciones en la lista:"
+    TIPO_VEHICULO_INVALIDO = "El tipo de vehiculo indicado es inválido. El valor indicado debiera ser una de las opciones en la lista:"

@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy.orm import Session
-from src.example.models import Persona, Mascota
+from src.example.models import Persona, Mascota, Vehiculo
 from src.example import schemas, exceptions
 
 # operaciones CRUD para Personas
@@ -40,7 +40,7 @@ def eliminar_persona(db: Session, persona_id: int) -> Persona:
 
 
 def crear_mascota(db: Session, mascota: schemas.MascotaCreate) -> Mascota:
-    return Mascota.create(db, mascota)
+    return Mascota.create(db, nombre=mascota.nombre, tipo=mascota.tipo, tutor_id=mascota.tutor_id)
 
 
 
@@ -66,3 +66,34 @@ def eliminar_mascota(db: Session, mascota_id: int) -> Mascota:
     db_mascota = leer_mascota(mascota_id)
     db_mascota.delete(db)
     return db_mascota
+
+
+
+
+def crear_vehiculo(db: Session, vehiculo: schemas.VehiculoCreate) -> schemas.Vehiculo:
+    persona = Persona.get(db, vehiculo.persona_id)
+    if persona is None:
+        raise exceptions.PersonaNoEncontrada()
+    
+    return Vehiculo.create(db, marca=vehiculo.marca, patente=vehiculo.patente, tipo=vehiculo.tipo, persona_id=vehiculo.persona_id)
+
+def listar_vehiculos(db: Session) -> List[Vehiculo]:
+    return Vehiculo.get_all(db)
+
+def leer_vehiculos(db: Session, vehiculo_id: int) -> Vehiculo:
+    db_vehiculo = Vehiculo.get(db, vehiculo_id)
+    if db_vehiculo is None:
+        raise exceptions.VehiculoNoEncontrada()
+    return db_vehiculo
+
+def modificar_vehiculo(
+    db: Session, vehiculo_id: int, vehiculo: schemas.VehiculoUpdate
+) -> Vehiculo:
+    db_vehiculo = leer_vehiculo(db, vehiculo_id)
+    values = vehiculo.model_dump()
+    return db_vehiculo.update(db, **values) #patente=values.patente, tipo=values.tipo, persona_id=values.persona_id)
+
+def eliminar_vehiculo(db: Session, vehiculo_id: int) -> Vehiculo:
+    db_vehiculo = leer_vehiculo(vehiculo_id)
+    db_vehiculo.delete(db)
+    return db_vehiculo

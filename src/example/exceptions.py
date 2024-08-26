@@ -26,3 +26,9 @@ class TipoMascotaInvalido(ValueError):
         posibles_tipos = ", ".join(posibles_tipos)
         message = f"{ErrorCode.TIPO_MASCOTA_INVALIDO} {posibles_tipos}."
         super().__init__(message)
+
+class TipoVehiculoInvalido(ValueError):
+    def __init__(self, posibles_tipos: List[str]):
+        posibles_tipos = ", ".join(posibles_tipos)
+        message = f"{ErrorCode.TIPO_VEHICULO_INVALIDO} {posibles_tipos}."
+        super().__init__(message)

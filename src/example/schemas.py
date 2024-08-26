@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, field_validator
-from typing import List
+from typing import List, Optional
 from datetime import datetime
-from src.example.models import TipoMascota
+from src.example.models import TipoMascota, TipoVehiculo
 from src.example.constants import ErrorCode
 from src.example import exceptions
 
@@ -34,6 +34,32 @@ class Persona(PersonaBase):
     model_config = {"from_attributes": True}
 
 
+class VehiculoBase(BaseModel):
+    patente: str
+    tipo: TipoVehiculo  # solo permitiremos valores de este tipo.
+    marca: str
+
+    @field_validator("tipo", mode="before")
+    @classmethod
+    def is_valid_tipo_vehiculo(cls, v: str) -> str:
+        if v.lower() not in TipoVehiculo:
+            raise exceptions.TipoVehiculoInvalido(list(TipoVehiculo))
+        return v.lower()
+
+class VehiculoCreate(VehiculoBase):
+    persona_id: int
+
+class Vehiculo(VehiculoBase):
+    id: int
+    persona_id: int
+    persona: Persona
+    fecha_creacion: datetime
+    fecha_modificacion: datetime
+
+class VehiculoUpdate(VehiculoCreate):
+    pass
+
+
 class MascotaBase(BaseModel):
     nombre: str
     tipo: TipoMascota  # solo permitiremos valores de este tipo.
@@ -50,16 +76,25 @@ class MascotaCreate(MascotaBase):
     tutor_id: int
 
 
-class MascotaUpdate(MascotaBase):
-    pass
+
+
 
 
 class Mascota(MascotaBase):
     id: int
-    fecha_creacion: datetime
-    fecha_modificacion: datetime
+
     tipo: TipoMascota
     tutor_id: int
     nombre_tutor: str
-
+    fecha_creacion: datetime
+    fecha_modificacion: datetime
+    
     model_config = {"from_attributes": True}
+
+
+class MascotaUpdate(MascotaBase):
+    pass
+
+
+    
+
